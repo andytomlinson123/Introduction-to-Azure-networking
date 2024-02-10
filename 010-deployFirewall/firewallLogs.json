@@ -1,0 +1,18 @@
+[
+  {
+    "category": "AZFWApplicationRule",
+    "enabled": true
+  },
+  {
+    "category": "AZFWNetworkRule",
+    "enabled": true
+  },
+  {
+    "category": "AZFWNatRule",
+    "enabled": true
+  },
+  {
+    "category": "AZFWThreatIntel",
+    "enabled": true
+  }
+]
