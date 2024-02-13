@@ -1,7 +1,8 @@
 **/.DS_Store
+*.cmproj
+*.mp4
 *.pages
 *.key
-*.rtf
 *.drawio
 *.png
 *.jpg
