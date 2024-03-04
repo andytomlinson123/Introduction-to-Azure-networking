@@ -104,8 +104,8 @@ Write-Host "Creating security rule: allow-ssh-inbound"
 az network nsg rule create `
   --nsg-name $subnetNsgName `
   --resource-group $resourceGroupName `
-  --direction Inbound `
   --name allow-ssh-inbound `
+  --direction Inbound `
   --priority 100 `
   --access Allow `
   --source-address-prefixes $yourPublicIp.ip `
@@ -119,8 +119,8 @@ Write-Host "Creating security rule: restrict-internet-outbound"
 az network nsg rule create `
   --nsg-name $subnetNsgName `
   --resource-group $resourceGroupName `
-  --direction Outbound `
   --name restrict-internet-outbound `
+  --direction Outbound `
   --priority 100 `
   --access Allow `
   --source-asgs $asgRestrictInternetName `
@@ -134,8 +134,8 @@ Write-Host "Creating security rule: allow-internet-outbound"
 az network nsg rule create `
   --nsg-name $subnetNsgName `
   --resource-group $resourceGroupName `
-  --direction Outbound `
   --name allow-internet-outbound `
+  --direction Outbound `
   --priority 200 `
   --access Allow `
   --source-asgs $asgAllowInternetName `
@@ -149,8 +149,8 @@ Write-Host "Creating security rule: deny-internet-outbound"
 az network nsg rule create `
   --nsg-name $subnetNsgName `
   --resource-group $resourceGroupName `
-  --direction Outbound `
   --name deny-internet-outbound `
+  --direction Outbound `
   --priority 300 `
   --access Deny `
   --source-address-prefixes "*" `
@@ -163,8 +163,8 @@ az network nsg rule create `
 Write-Host "Associating $subnetNsgName to $subnetName"
 az network vnet subnet update `
   --vnet-name $virtualNetworkName `
-  --name $subnetName `
   --resource-group $resourceGroupName `
+  --name $subnetName `
   --network-security-group $subnetNsgName `
   --only-show-errors `
   --output None
@@ -198,9 +198,9 @@ az vm create `
 
 Write-Host "Updating $virtualMachine01NicName to apply $asgRestrictInternetName"
 az network nic ip-config update `
-  --name ipconfig1 `
   --nic-name $virtualMachine01NicName `
   --resource-group $resourceGroupName `
+  --name ipconfig1 `
   --application-security-groups $asgRestrictInternetName `
   --only-show-errors `
   --output None
