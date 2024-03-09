@@ -11,8 +11,8 @@ $nsgFlowLogsName = "$subnetNsgName-flow-logs"
 $nsgFlowLogsVersion = "2"
 $nsgFlowLogsInterval = "10"
 $nsgFlowLogsRetention = "30"
-$asgRestrictSubnetName = "asg-restrict-snet-learn-02"
-$asgAllowSubnetName = "asg-allow-snet-learn-02"
+$asgRestrictSubnetName = "asg-restrict-$subnetName"
+$asgAllowSubnetName = "asg-allow-$subnetName"
 $asgRestrictInternetName = "asg-restrict-internet"
 $asgAllowInternetName = "asg-allow-internet"
 $virtualMachine01Name = "vm-learn-01"
@@ -70,8 +70,8 @@ Write-Host "Creating security rule: restrict-subnet-inbound"
 az network nsg rule create `
   --nsg-name $subnetNsgName `
   --resource-group $resourceGroupName `
-  --direction Inbound `
   --name restrict-subnet-inbound `
+  --direction Inbound `
   --priority 100 `
   --access Allow `
   --source-asgs $asgRestrictSubnetName `
@@ -85,8 +85,8 @@ Write-Host "Creating security rule: allow-subnet-inbound"
 az network nsg rule create `
   --nsg-name $subnetNsgName `
   --resource-group $resourceGroupName `
-  --direction Inbound `
   --name allow-subnet-inbound `
+  --direction Inbound `
   --priority 200 `
   --access Allow `
   --source-asgs $asgAllowSubnetName `
@@ -100,8 +100,8 @@ Write-Host "Creating security rule: deny-subnet-inbound"
 az network nsg rule create `
   --nsg-name $subnetNsgName `
   --resource-group $resourceGroupName `
-  --direction Inbound `
   --name deny-subnet-inbound `
+  --direction Inbound `
   --priority 300 `
   --access Deny `
   --source-address-prefixes VirtualNetwork `
@@ -110,14 +110,29 @@ az network nsg rule create `
   --destination-port-ranges "*" `
   --only-show-errors `
   --output None
-      
+
+Write-Host "Creating security rule: restrict-internet-outbound"
+az network nsg rule create `
+  --nsg-name $subnetNsgName `
+  --resource-group $resourceGroupName `
+  --name restrict-internet-outbound `
+  --direction Outbound `
+  --priority 100 `
+  --access Allow `
+  --source-asgs $asgRestrictInternetName `
+  --destination-address-prefixes 34.117.186.192  `
+  --protocol Tcp `
+  --destination-port-ranges 443 `
+  --only-show-errors `
+  --output None
+
 Write-Host "Creating security rule: allow-internet-outbound"
 az network nsg rule create `
   --nsg-name $subnetNsgName `
   --resource-group $resourceGroupName `
-  --direction Outbound `
   --name allow-internet-outbound `
-  --priority 100 `
+  --direction Outbound `
+  --priority 200 `
   --access Allow `
   --source-asgs $asgAllowInternetName `
   --destination-address-prefixes Internet `
@@ -130,9 +145,9 @@ Write-Host "Creating security rule: deny-internet-outbound"
 az network nsg rule create `
   --nsg-name $subnetNsgName `
   --resource-group $resourceGroupName `
-  --direction Outbound `
   --name deny-internet-outbound `
-  --priority 200 `
+  --direction Outbound `
+  --priority 300 `
   --access Deny `
   --source-address-prefixes "*" `
   --destination-address-prefixes Internet `
