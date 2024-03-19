@@ -9,7 +9,7 @@ $subnet02Name = "snet-learn-02"
 $subnet02NsgName = "nsg-$subnet02Name"
 $subnet02NsgFlowLogsName = "$subnet02NsgName-flow-logs"
 $logAnalyticsName = "laws-learn-01"
-$storageAccountName = "stlearn01flowlogs"
+$storageAccountName = "stlearn01flowlogs" # must be globally unique
 $natGwName = "natgw-learn-01"
 $natGwIpName = "$natGwName-ip"
 
@@ -66,8 +66,8 @@ az network nat gateway create `
 Write-Host "Associating $natGwName to $subnet01Name"
 az network vnet subnet update `
   --vnet-name $virtualNetworkName `
-  --name $subnet01Name `
   --resource-group $resourceGroupName `
+  --name $subnet01Name `
   --nat-gateway $natGwName `
   --only-show-errors `
   --output None
@@ -75,8 +75,8 @@ az network vnet subnet update `
 Write-Host "Associating $natGwName to $subnet02Name"
 az network vnet subnet update `
   --vnet-name $virtualNetworkName `
-  --name $subnet02Name `
   --resource-group $resourceGroupName `
+  --name $subnet02Name `
   --nat-gateway $natGwName `
   --only-show-errors `
   --output None
