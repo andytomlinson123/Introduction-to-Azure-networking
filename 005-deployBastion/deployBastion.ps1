@@ -18,20 +18,18 @@ $virtualMachine01NicName = "$virtualMachine01Name-nic"
 Write-Host "Disassociating $natGwName from $subnet01Name"
 az network vnet subnet update `
   --vnet-name $virtualNetworkName `
-  --name $subnet01Name `
   --resource-group $resourceGroupName `
+  --name $subnet01Name `
   --remove nat_gateway `
-  --no-wait `
   --only-show-errors `
   --output None
 
 Write-Host "Disassociating $natGwName from $subnet02Name"
 az network vnet subnet update `
   --vnet-name $virtualNetworkName `
-  --name $subnet02Name `
   --resource-group $resourceGroupName `
+  --name $subnet02Name `
   --remove nat_gateway `
-  --no-wait `
   --only-show-errors `
   --output None
 
@@ -52,9 +50,9 @@ az network public-ip delete `
 
 Write-Host "Creating subnet: $bastionSubnetName"
 az network vnet subnet create `
-  --name $bastionSubnetName `
-  --resource-group $resourceGroupName `
   --vnet-name $virtualNetworkName `
+  --resource-group $resourceGroupName `
+  --name $bastionSubnetName `
   --address-prefixes $bastionSubnetAddress `
   --only-show-errors `
   --output None
@@ -84,9 +82,9 @@ az network bastion create `
 
 Write-Host "Disassociating $virtualMachine01IpName from $virtualMachine01NicName"
 az network nic ip-config update `
-  --name ipconfig1 `
   --nic-name $virtualMachine01NicName `
   --resource-group $resourceGroupName `
+  --name ipconfig1 `
   --remove public_ip_address `
   --only-show-errors `
   --output None
