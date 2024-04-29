@@ -15,100 +15,89 @@ $virtualNetwork02Address = "10.2.0.0/16"
 $subnet02Name = "snet-learn-02"
 $subnet02NsgName = "nsg-$subnet02Name"
 $subnet02Address = "10.2.1.0/24"
-$virtualMachine03Name = "vm-learn-03"
-$virtualMachine03NicName = "$virtualMachine03Name-nic"
-$virtualMachine03DiskName = "$virtualMachine03Name-disk-os"
 $virtualMachineSize = "Standard_B1ls"
 $virtualMachineImage = "Ubuntu2204"
 $virtualMachineUsername = "learnadmin"
 $virtualMachinePassword = "ReplaceMe24!"
 
-Write-Host "Deleting restrict-internet-outbound from $subnet01NsgName"
-az network nsg rule delete `
-  --name restrict-internet-outbound `
+Write-Host "Retrieving security rules from $subnet01NsgName"
+$subnet01NsgRules = az network nsg rule list `
   --nsg-name $subnet01NsgName `
   --resource-group $resourceGroup01Name `
   --only-show-errors `
-  --output None
+  --output json | ConvertFrom-Json
 
-Write-Host "Deleting allow-internet-outbound from $subnet01NsgName"
-az network nsg rule delete `
-  --name allow-internet-outbound `
-  --nsg-name $subnet01NsgName `
-  --resource-group $resourceGroup01Name `
-  --only-show-errors `
-  --output None
+foreach ($subnet01NsgRule in $subnet01NsgRules) {
 
-Write-Host "Deleting deny-internet-outbound from $subnet01NsgName"
-az network nsg rule delete `
-  --name deny-internet-outbound `
-  --nsg-name $subnet01NsgName `
-  --resource-group $resourceGroup01Name `
-  --only-show-errors `
-  --output None
+  $nsgRuleName = $subnet01NsgRule.name
+
+  Write-Host "Deleting $nsgRuleName from $subnet01NsgName"
+  az network nsg rule delete `
+    --nsg-name $subnet01NsgName `
+    --resource-group $resourceGroup01Name `
+    --name $nsgRuleName `
+    --only-show-errors `
+    --output None
+}
 
 Write-Host "Disassociating application security groups: $virtualMachine01NicName"
 az network nic ip-config update `
-  --name ipconfig1 `
   --nic-name $virtualMachine01NicName `
   --resource-group $resourceGroup01Name `
+  --name ipconfig1 `
   --remove application_security_groups `
   --only-show-errors `
   --output None
-  
-Write-Host "Deleting virtual machine: $virtualMachine02Name"
-az vm delete `
-  --name $virtualMachine02Name `
-  --resource-group $resourceGroup01Name `
-  --yes `
-  --only-show-errors `
-  --output None
 
-Write-Host "Deleting network interface: $virtualMachine02NicName"
-az network nic delete `
-  --name $virtualMachine02NicName `
+Write-Host "Retrieving virtual machines from $resourceGroup01Name"
+$virtualMachines = az vm list `
   --resource-group $resourceGroup01Name `
   --only-show-errors `
-  --output None
+  --output json | ConvertFrom-Json
 
-Write-Host "Deleting disk: $virtualMachine02DiskName"
-az disk delete `
-  --disk-name $virtualMachine02DiskName `
-  --resource-group $resourceGroup01Name `
-  --yes `
-  --no-wait `
-  --only-show-errors `
-  --output None
+foreach ($virtualMachine in $virtualMachines) {
 
-Write-Host "Deleting virtual machine: $virtualMachine03Name"
-az vm delete `
-  --name $virtualMachine03Name `
-  --resource-group $resourceGroup01Name `
-  --yes `
-  --only-show-errors `
-  --output None
-  
-Write-Host "Deleting network interface: $virtualMachine03NicName"
-az network nic delete `
-  --name $virtualMachine03NicName `
-  --resource-group $resourceGroup01Name `
-  --only-show-errors `
-  --output None
-  
-Write-Host "Deleting disk: $virtualMachine03DiskName"
-az disk delete `
-  --disk-name $virtualMachine03DiskName `
-  --resource-group $resourceGroup01Name `
-  --yes `
-  --no-wait `
-  --only-show-errors `
-  --output None
+  $virtualMachineName = $virtualMachine.name
+  $virtualMachineNicName = $virtualMachine.networkProfile.networkInterfaces.id.split("/")[8]
+  $virtualMachineDiskName = $virtualMachine.storageProfile.osDisk.name
+
+  if ($virtualMachineName -eq $virtualMachine01Name) {
+
+    Write-Host "Preserving $virtualMachineName"
+  }
+  else {
+
+    Write-Host "Deleting virtual machine: $virtualMachineName"
+    az vm delete `
+      --name $virtualMachineName `
+      --resource-group $resourceGroup01Name `
+      --yes `
+      --only-show-errors `
+      --output None
+
+    Write-Host "Deleting network interface: $virtualMachineNicName"
+    az network nic delete `
+      --name $virtualMachineNicName `
+      --resource-group $resourceGroup01Name `
+      --only-show-errors `
+      --output None
+
+    Write-Host "Deleting disk: $virtualMachineDiskName"
+    az disk delete `
+      --disk-name $virtualMachineDiskName `
+      --resource-group $resourceGroup01Name `
+      --yes `
+      --no-wait `
+      --only-show-errors `
+      --output None
+  }
+}
 
 Write-Host "Deleting subnet: $subnet02Name"
 az network vnet subnet delete `
-  --name $subnet02Name `
-  --resource-group $resourceGroup01Name `
   --vnet-name $virtualNetwork01Name `
+  --resource-group $resourceGroup01Name `
+  --name $subnet02Name `
   --only-show-errors `
   --output None
 
@@ -120,37 +109,24 @@ az network nsg delete `
   --only-show-errors `
   --output None
 
-Write-Host "Deleting application security group: asg-restrict-internet"  
-az network asg delete `
-  --name asg-restrict-internet `
+Write-Host "Retrieving application security groups from $resourceGroup01Name"
+$applicationSecurityGroups = az network asg list `
   --resource-group $resourceGroup01Name `
-  --no-wait `
   --only-show-errors `
-  --output None
-  
-Write-Host "Deleting application security group: asg-allow-internet"  
-az network asg delete `
-  --name asg-allow-internet `
-  --resource-group $resourceGroup01Name `
-  --no-wait `
-  --only-show-errors `
-  --output None
+  --output json | ConvertFrom-Json
 
-Write-Host "Deleting application security group: asg-restrict-snet-learn-02"  
-az network asg delete `
-  --name asg-restrict-snet-learn-02 `
-  --resource-group $resourceGroup01Name `
-  --no-wait `
-  --only-show-errors `
-  --output None
-  
-Write-Host "Deleting application security group: asg-allow-snet-learn-02"  
-az network asg delete `
-  --name asg-allow-snet-learn-02 `
-  --resource-group $resourceGroup01Name `
-  --no-wait `
-  --only-show-errors `
-  --output None
+foreach ($applicationSecurityGroup in $applicationSecurityGroups) {
+
+  $applicationSecurityGroupName = $applicationSecurityGroup.name
+
+  Write-Host "Deleting application security group: $applicationSecurityGroupName"  
+  az network asg delete `
+    --name $applicationSecurityGroupName `
+    --resource-group $resourceGroup01Name `
+    --no-wait `
+    --only-show-errors `
+    --output None
+}
 
 Write-Host "Creating resource group: $resourceGroup02Name"
 az group create `
@@ -179,9 +155,9 @@ az network nsg create `
 
 Write-Host "Creating subnet: $subnet02Name"
 az network vnet subnet create `
-  --name $subnet02Name `
-  --resource-group $resourceGroup02Name `
   --vnet-name $virtualNetwork02Name `
+  --resource-group $resourceGroup02Name `
+  --name $subnet02Name `
   --address-prefixes $subnet02Address `
   --network-security-group $subnet02NsgName `
   --only-show-errors `
