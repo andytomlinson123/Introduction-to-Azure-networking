@@ -58,7 +58,8 @@ $virtualMachines = az vm list `
 foreach ($virtualMachine in $virtualMachines) {
 
   $virtualMachineName = $virtualMachine.name
-  $virtualMachineNicName = $virtualMachine.networkProfile.networkInterfaces.id.split("/")[8]
+  $virtualMachineNicId = $virtualMachine.networkProfile.networkInterfaces.id
+  $virtualMachineNicName = $virtualMachineNicId.split("/")[8]
   $virtualMachineDiskName = $virtualMachine.storageProfile.osDisk.name
 
   if ($virtualMachineName -eq $virtualMachine01Name) {
