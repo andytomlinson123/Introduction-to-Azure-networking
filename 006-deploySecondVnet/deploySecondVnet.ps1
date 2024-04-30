@@ -59,7 +59,7 @@ foreach ($virtualMachine in $virtualMachines) {
 
   $virtualMachineName = $virtualMachine.name
   $virtualMachineNicId = $virtualMachine.networkProfile.networkInterfaces.id
-  $virtualMachineNicName = $virtualMachineNicId.split("/")[8]
+  $virtualMachineNicName = $virtualMachineNicId.split("/")[-1]
   $virtualMachineDiskName = $virtualMachine.storageProfile.osDisk.name
 
   if ($virtualMachineName -eq $virtualMachine01Name) {
