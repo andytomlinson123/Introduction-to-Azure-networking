@@ -43,8 +43,8 @@ az network nsg create `
 
 Write-Host "Creating subnet: $subnet03Name"
 az network vnet subnet create `
-  --resource-group $resourceGroup03Name `
   --vnet-name $virtualNetwork03Name `
+  --resource-group $resourceGroup03Name `
   --name $subnet03Name `
   --address-prefixes $subnet03Address `
   --network-security-group $subnet03NsgName `
