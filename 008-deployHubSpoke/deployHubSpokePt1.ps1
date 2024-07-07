@@ -5,10 +5,6 @@ $virtualNetwork01Name = "vnet-learn-01"
 $bastionSubnetName = "AzureBastionSubnet"
 $bastionName = "bas-learn-01"
 $bastionIpName = "$bastionName-ip"
-$resourceGroup02Name = "rg-learn-02"
-$virtualNetwork02Name = "vnet-learn-02"
-$resourceGroup03Name = "rg-learn-03"
-$virtualNetwork03Name = "vnet-learn-03"
 $resourceGroupHubName = "rg-learn-hub"
 $virtualNetworkHubName = "vnet-learn-hub"
 $virtualNetworkHubAddress = "10.0.0.0/16"
@@ -20,53 +16,27 @@ $virtualNetworkGatewayIpName = "$virtualNetworkGatewayName-ip"
 $bastionHubName = "bas-learn-hub"
 $bastionHubIpName = "$bastionHubName-ip"
 
-Write-Host "Deleting peer: peer-$virtualNetwork01Name-to-$virtualNetwork02Name"
-az network vnet peering delete `
-  --vnet-name $virtualNetwork01Name `
-  --resource-group $resourceGroup01Name `
-  --name peer-$virtualNetwork01Name-to-$virtualNetwork02Name `
+Write-Host "Retrieving virtual networks"
+$virtualNetworks = az network vnet list `
   --only-show-errors `
-  --output None
+  --output json | ConvertFrom-Json
 
-Write-Host "Deleting peer: peer-$virtualNetwork01Name-to-$virtualNetwork03Name"
-az network vnet peering delete `
-  --vnet-name $virtualNetwork01Name `
-  --resource-group $resourceGroup01Name `
-  --name peer-$virtualNetwork01Name-to-$virtualNetwork03Name `
-  --only-show-errors `
-  --output None
+foreach ($virtualNetwork in $virtualNetworks) {
 
-Write-Host "Deleting peer: peer-$virtualNetwork02Name-to-$virtualNetwork01Name"
-az network vnet peering delete `
-  --vnet-name $virtualNetwork02Name `
-  --resource-group $resourceGroup02Name `
-  --name peer-$virtualNetwork02Name-to-$virtualNetwork01Name `
-  --only-show-errors `
-  --output None
+  $virtualNetworkPeerings = $virtualNetwork.virtualNetworkPeerings
 
-Write-Host "Deleting peer: peer-$virtualNetwork02Name-to-$virtualNetwork03Name"
-az network vnet peering delete `
-  --vnet-name $virtualNetwork02Name `
-  --resource-group $resourceGroup02Name `
-  --name peer-$virtualNetwork02Name-to-$virtualNetwork03Name `
-  --only-show-errors `
-  --output None
+  foreach ($virtualNetworkPeering in $virtualNetworkPeerings) {
 
-Write-Host "Deleting peer: peer-$virtualNetwork03Name-to-$virtualNetwork02Name"
-az network vnet peering delete `
-  --vnet-name $virtualNetwork03Name `
-  --resource-group $resourceGroup03Name `
-  --name peer-$virtualNetwork03Name-to-$virtualNetwork02Name `
-  --only-show-errors `
-  --output None
+    $virtualNetworkPeeringName = $virtualNetworkPeering.name
+    $virtualNetworkPeeringId = $virtualNetworkPeering.id
 
-Write-Host "Deleting peer: peer-$virtualNetwork03Name-to-$virtualNetwork01Name"
-az network vnet peering delete `
-  --vnet-name $virtualNetwork03Name `
-  --resource-group $resourceGroup03Name `
-  --name peer-$virtualNetwork03Name-to-$virtualNetwork01Name `
-  --only-show-errors `
-  --output None
+    Write-Host "Deleting peer: $($virtualNetworkPeeringName)"
+    az network vnet peering delete `
+      --ids $virtualNetworkPeeringId `
+      --only-show-errors `
+      --output None
+  }
+}
 
 Write-Host "Deleting Bastion: $bastionName"
 az network bastion delete `
@@ -108,18 +78,18 @@ az network vnet create `
 
 Write-Host "Creating subnet: $gatewaySubnetName"
 az network vnet subnet create `
-  --name $gatewaySubnetName `
-  --resource-group $resourceGroupHubName `
   --vnet-name $virtualNetworkHubName `
+  --resource-group $resourceGroupHubName `
+  --name $gatewaySubnetName `
   --address-prefixes $gatewaySubnetAddress `
   --only-show-errors `
   --output None
 
 Write-Host "Creating subnet: $bastionSubnetName"
 az network vnet subnet create `
-  --name $bastionSubnetName `
-  --resource-group $resourceGroupHubName `
   --vnet-name $virtualNetworkHubName `
+  --resource-group $resourceGroupHubName `
+  --name $bastionSubnetName `
   --address-prefixes $bastionSubnetAddress `
   --only-show-errors `
   --output None
