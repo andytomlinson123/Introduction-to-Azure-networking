@@ -54,9 +54,9 @@ az network public-ip delete `
 
 Write-Host "Deleting subnet: $bastionSubnetName"
 az network vnet subnet delete `
-  --name $bastionSubnetName `
-  --resource-group $resourceGroup01Name `
   --vnet-name $virtualNetwork01Name `
+  --resource-group $resourceGroup01Name `
+  --name $bastionSubnetName `
   --only-show-errors `
   --output None
 
