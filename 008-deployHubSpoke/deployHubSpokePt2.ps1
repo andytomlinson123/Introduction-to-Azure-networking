@@ -11,6 +11,7 @@ $virtualNetworkHubId = az network vnet show `
   --query id `
   --output tsv
 
+Write-Host "Creating spoke virtual network variables"
 $spokeVirtualNetworks = @(
   "01",
   "02",
@@ -72,26 +73,11 @@ foreach ($spokeVirtualNetwork in $spokeVirtualNetworks) {
     --only-show-errors `
     --output None
 
-  if ($spokeVirtualNetwork -eq "01") {
-
-    $virtualNetworkRoutes = (
-      "2",
-      "3"
-    )
-  }
-  elseif ($spokeVirtualNetwork -eq "02") {
-
-    $virtualNetworkRoutes = (
-      "1",
-      "3"
-    )
-  }
-  else {
-
-    $virtualNetworkRoutes = (
-      "1",
-      "2"
-    )
+  Write-Host "Creating spoke virtual network route variables"
+  switch ($spokeVirtualNetwork) {
+    "01" { $virtualNetworkRoutes = @("2", "3") }
+    "02" { $virtualNetworkRoutes = @("1", "3") }
+    "03" { $virtualNetworkRoutes = @("1", "2") }
   }
 
   foreach ($virtualNetworkRoute in $virtualNetworkRoutes) {
