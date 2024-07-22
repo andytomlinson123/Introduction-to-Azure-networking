@@ -36,9 +36,9 @@ az network vnet create `
 
 Write-Host "Creating subnet: $gatewaySubnetName"
 az network vnet subnet create `
-  --name $gatewaySubnetName `
-  --resource-group $resourceGroupDcName `
   --vnet-name $virtualNetworkDcName `
+  --resource-group $resourceGroupDcName `
+  --name $gatewaySubnetName `
   --address-prefixes $gatewaySubnetAddress `
   --only-show-errors `
   --output None
@@ -53,9 +53,9 @@ az network nsg create `
 
 Write-Host "Creating subnet: $subnetDcName"
 az network vnet subnet create `
-  --name $subnetDcName `
-  --resource-group $resourceGroupDcName `
   --vnet-name $virtualNetworkDcName `
+  --resource-group $resourceGroupDcName `
+  --name $subnetDcName `
   --address-prefixes $subnetDcAddress `
   --network-security-group $subnetDcNsgName `
   --only-show-errors `
