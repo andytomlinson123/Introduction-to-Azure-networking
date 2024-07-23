@@ -1,6 +1,4 @@
 Write-Host "Creating variables"
-$resourceGroupHubName = "rg-learn-hub"
-$bastionHubName = "bas-learn-hub"
 $resourceGroupDcName = "rg-learn-dc"
 $resourceGroupLocation = "uksouth"
 $virtualNetworkDcName = "vnet-learn-dc"
@@ -19,14 +17,6 @@ $virtualMachineSize = "Standard_B1ls"
 $virtualMachineImage = "Ubuntu2204"
 $virtualMachineUsername = "learnadmin"
 $virtualMachinePassword = "ReplaceMe24!"
-
-Write-Host "Enabling IP-based connections: $bastionHubName"
-az network bastion update `
-  --name $bastionHubName `
-  --resource-group $resourceGroupHubName `
-  --enable-ip-connect `
-  --only-show-errors `
-  --output None
 
 Write-Host "Creating resource group: $resourceGroupDcName"
 az group create `
