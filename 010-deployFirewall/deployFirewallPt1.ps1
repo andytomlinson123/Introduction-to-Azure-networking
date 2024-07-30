@@ -28,18 +28,18 @@ az monitor log-analytics workspace create `
 
 Write-Host "Creating subnet: $firewallSubnetName"
 az network vnet subnet create `
-  --name $firewallSubnetName `
-  --resource-group $resourceGroupHubName `
   --vnet-name $virtualNetworkHubName `
+  --resource-group $resourceGroupHubName `
+  --name $firewallSubnetName `
   --address-prefixes $firewallSubnetAddress `
   --only-show-errors `
   --output None
 
 Write-Host "Creating subnet: $firewallManagementSubnetName"
 az network vnet subnet create `
-  --name $firewallManagementSubnetName `
-  --resource-group $resourceGroupHubName `
   --vnet-name $virtualNetworkHubName `
+  --resource-group $resourceGroupHubName `
+  --name $firewallManagementSubnetName `
   --address-prefixes $firewallManagementSubnetAddress `
   --only-show-errors `
   --output None
