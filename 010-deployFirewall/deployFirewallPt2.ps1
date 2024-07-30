@@ -45,8 +45,8 @@ az network route-table create `
 Write-Host "Associating $gatewaySubnetRtName to $gatewaySubnetName"
 az network vnet subnet update `
   --vnet-name $virtualNetworkHubName `
-  --name $gatewaySubnetName `
   --resource-group $resourceGroupHubName `
+  --name $gatewaySubnetName `
   --route-table $gatewaySubnetRtName `
   --only-show-errors `
   --output None
