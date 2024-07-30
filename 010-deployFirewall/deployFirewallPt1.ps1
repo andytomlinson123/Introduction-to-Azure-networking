@@ -12,6 +12,12 @@ $firewallManagementSubnetName = "AzureFirewallManagementSubnet"
 $firewallManagementSubnetAddress = "10.0.3.0/24"
 $firewallName = "fw-learn-hub"
 $firewallPolicyName = "$firewallName-policy"
+$firewallPolicyRcgDnatName = "rcg-dnat"
+$firewallPolicyRcDnatName = "rc-dnat"
+$firewallPolicyRcgNetworkName = "rcg-network"
+$firewallPolicyRcNetworkName = "rc-network"
+$firewallPolicyRcgApplicationName = "rcg-application"
+$firewallPolicyRcApplicationName = "rc-application"
 $firewallIpName = "$firewallName-ip"
 $firewallIpConfigName = "$firewallName-ipconfig"
 $firewallManagementIpName = "$firewallName-mgmt-ip"
@@ -85,21 +91,21 @@ $virtualMachine01PrivateIp = az network nic show `
   --only-show-errors `
   --output tsv
 
-Write-Host "Creating rule collection group: rcg-dnat"
+Write-Host "Creating rule collection group: $firewallPolicyRcgDnatName"
 az network firewall policy rule-collection-group create `
   --policy-name $firewallPolicyName `
   --resource-group $resourceGroupHubName `
-  --name rcg-dnat `
+  --name $firewallPolicyRcgDnatName `
   --priority 1000 `
   --only-show-errors `
   --output None
 
-Write-Host "Creating rule collection: rc-dnat"
+Write-Host "Creating rule collection: $firewallPolicyRcDnatName"
 az network firewall policy rule-collection-group collection add-nat-collection `
   --policy-name $firewallPolicyName `
   --resource-group $resourceGroupHubName `
-  --rcg-name rcg-dnat `
-  --name rc-dnat `
+  --rcg-name $firewallPolicyRcgDnatName `
+  --name $firewallPolicyRcDnatName `
   --collection-priority 1000 `
   --rule-name rule-allow-ssh-inbound `
   --action DNAT `
@@ -112,21 +118,21 @@ az network firewall policy rule-collection-group collection add-nat-collection `
   --only-show-errors `
   --output None
 
-Write-Host "Creating rule collection group: rcg-network"
+Write-Host "Creating rule collection group: $firewallPolicyRcgNetworkName"
 az network firewall policy rule-collection-group create `
   --policy-name $firewallPolicyName `
   --resource-group $resourceGroupHubName `
-  --name rcg-network `
+  --name $firewallPolicyRcgNetworkName `
   --priority 2000 `
   --only-show-errors `
   --output None
 
-Write-Host "Creating rule collection: rc-network"
+Write-Host "Creating rule collection: $firewallPolicyRcNetworkName"
 az network firewall policy rule-collection-group collection add-filter-collection `
   --policy-name $firewallPolicyName `
   --resource-group $resourceGroupHubName `
-  --rcg-name rcg-network `
-  --name rc-network `
+  --rcg-name $firewallPolicyRcgNetworkName `
+  --name $firewallPolicyRcNetworkName `
   --collection-priority 1000 `
   --rule-name rule-allow-network-outbound `
   --rule-type NetworkRule `
@@ -142,8 +148,8 @@ Write-Host "Creating rule: rule-allow-network-icmp-outbound"
 az network firewall policy rule-collection-group collection rule add `
   --policy-name $firewallPolicyName `
   --resource-group $resourceGroupHubName `
-  --rcg-name rcg-network `
-  --collection-name rc-network `
+  --rcg-name $firewallPolicyRcgNetworkName `
+  --collection-name $firewallPolicyRcNetworkName `
   --name rule-allow-network-icmp-outbound `
   --rule-type NetworkRule `
   --source-addresses "*" `
@@ -153,21 +159,21 @@ az network firewall policy rule-collection-group collection rule add `
   --only-show-errors `
   --output None
 
-Write-Host "Creating rule collection group: rcg-application"
+Write-Host "Creating rule collection group: $firewallPolicyRcgApplicationName"
 az network firewall policy rule-collection-group create `
   --policy-name $firewallPolicyName `
   --resource-group $resourceGroupHubName `
-  --name rcg-application `
+  --name $firewallPolicyRcgApplicationName `
   --priority 3000 `
   --only-show-errors `
   --output None
 
-Write-Host "Creating rule collection: rc-application"
+Write-Host "Creating rule collection: $firewallPolicyRcApplicationName"
 az network firewall policy rule-collection-group collection add-filter-collection `
   --policy-name $firewallPolicyName `
   --resource-group $resourceGroupHubName `
-  --rcg-name rcg-application `
-  --name rc-application `
+  --rcg-name $firewallPolicyRcgApplicationName `
+  --name $firewallPolicyRcApplicationName `
   --collection-priority 1000 `
   --rule-name rule-allow-application-outbound `
   --rule-type ApplicationRule `
