@@ -1,6 +1,6 @@
 [
   {
-    "category": "AZFWApplicationRule",
+    "category": "AZFWNatRule",
     "enabled": true
   },
   {
@@ -8,7 +8,7 @@
     "enabled": true
   },
   {
-    "category": "AZFWNatRule",
+    "category": "AZFWApplicationRule",
     "enabled": true
   },
   {
