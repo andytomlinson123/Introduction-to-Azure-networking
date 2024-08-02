@@ -107,7 +107,7 @@ az network firewall policy rule-collection-group collection add-nat-collection `
   --rcg-name $firewallPolicyRcgDnatName `
   --name $firewallPolicyRcDnatName `
   --collection-priority 1000 `
-  --rule-name rule-allow-ssh-inbound `
+  --rule-name rule-allow-ssh `
   --action DNAT `
   --source-addresses $yourPublicIp.ip `
   --destination-address $firewallIp `
@@ -134,7 +134,7 @@ az network firewall policy rule-collection-group collection add-filter-collectio
   --rcg-name $firewallPolicyRcgNetworkName `
   --name $firewallPolicyRcNetworkName `
   --collection-priority 1000 `
-  --rule-name rule-allow-network-outbound `
+  --rule-name rule-allow-network `
   --rule-type NetworkRule `
   --action Allow `
   --source-addresses "*" `
@@ -150,7 +150,7 @@ az network firewall policy rule-collection-group collection rule add `
   --resource-group $resourceGroupHubName `
   --rcg-name $firewallPolicyRcgNetworkName `
   --collection-name $firewallPolicyRcNetworkName `
-  --name rule-allow-network-icmp-outbound `
+  --name rule-allow-network-icmp `
   --rule-type NetworkRule `
   --source-addresses "*" `
   --destination-addresses "*" `
@@ -175,7 +175,7 @@ az network firewall policy rule-collection-group collection add-filter-collectio
   --rcg-name $firewallPolicyRcgApplicationName `
   --name $firewallPolicyRcApplicationName `
   --collection-priority 1000 `
-  --rule-name rule-allow-application-outbound `
+  --rule-name rule-allow-application `
   --rule-type ApplicationRule `
   --action Allow `
   --source-addresses "*" `
